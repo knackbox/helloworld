@@ -1,15 +1,26 @@
+x-common: &common-config
+  container_name: helloworld
+  ports:
+    - "5000:5000"
+
+x-common-build: &common-build-config
+  <<: *common-config
+  build:
+    context: .
+    dockerfile: Dockerfile
+
 services:
   dev:
-    build: .
-    ports:
-      - "5000:5000"
+    <<: *common-build-config
     volumes:
       - .:/app
     environment:
       - FLASK_ENV=development
-    command: flask run --host=0.0.0.0 --port=5000
+    command: flask run --host=0.0.0.0 --port=5000 --debug
+
+  test:
+    <<: *common-build-config
 
   prod:
-    build: .
-    ports:
-      - "5000:5000"
+    image: ghcr.io/knackbox/helloworld:latest
+
